@@ -1,18 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
-type User = {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
-  phone: string;
-  website: string;
-};
+import AddUser from './AddUser';
+import type { User } from './definitions.d';
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
+  const [showAddUser, setShowAddUser] = useState(false);
 
   useEffect(() => {
     fetch('https://jsonplaceholder.typicode.com/users')
@@ -22,7 +16,18 @@ export default function Home() {
 
   return (
     <main className='flex min-h-screen flex-col p-24 text-2xl'>
-      {users.length === 0 && <div className='self-center'>Loading...</div>}
+      <div className='mb-5'>
+        <button
+          className='self-start border-2 p-4 rounded-lg mb-3'
+          onClick={() => setShowAddUser(!showAddUser)}
+        >
+          Add User
+        </button>
+        {showAddUser && <AddUser setUsers={setUsers} />}
+      </div>
+      {users.length === 0 && (
+        <div className='self-center'>Loading users...</div>
+      )}
       {users.length > 0 &&
         users.map((user) => (
           <div key={user.id}>
