@@ -8,11 +8,23 @@ import type { User } from './definitions.d';
 
 const DisplayUser = ({
   user,
+  setUsers,
   setEditingUserId,
 }: {
   user: User;
+  setUsers: React.Dispatch<React.SetStateAction<User[]>>;
   setEditingUserId: React.Dispatch<React.SetStateAction<number | null>>;
 }) => {
+  const deleteUser = async (id: number) => {
+    const response = await fetch(`http://localhost:8080/users/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok && response.status === 200) {
+      setUsers((prevState) => prevState.filter((u) => u.id !== id));
+    }
+  };
+
   return (
     <div>
       <p>
@@ -36,10 +48,16 @@ const DisplayUser = ({
         {user.website}
       </p>
       <button
-        className='border-2 p-1 rounded-lg mt-1 mb-3'
+        className='border-2 p-1 rounded-lg mt-1 mr-2 mb-3'
         onClick={() => setEditingUserId(user.id)}
       >
         Edit this user
+      </button>
+      <button
+        className='border-2 p-1 rounded-lg mt-1 mb-3'
+        onClick={() => deleteUser(user.id)}
+      >
+        Delete this user
       </button>
       <br />
     </div>
@@ -88,7 +106,12 @@ export default function Users() {
               setEditingUserId={setEditingUserId}
             />
           ) : (
-            <DisplayUser key={user.id} user={user} setEditingUserId={setEditingUserId} />
+            <DisplayUser
+              key={user.id}
+              user={user}
+              setUsers={setUsers}
+              setEditingUserId={setEditingUserId}
+            />
           )
         )}
     </main>
