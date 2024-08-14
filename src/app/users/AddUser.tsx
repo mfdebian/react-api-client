@@ -3,8 +3,10 @@ import type { User } from './definitions.d';
 
 const AddUser = ({
   setUsers,
+  setShowAddUser,
 }: {
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+  setShowAddUser: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [name, setName] = useState<string>('');
   const [username, setUsername] = useState<string>('');
@@ -23,7 +25,7 @@ const AddUser = ({
       website,
     };
 
-    const response = await fetch('https://jsonplaceholder.typicode.com/users', {
+    const response = await fetch('http://localhost:8080/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userToSave),
@@ -37,6 +39,7 @@ const AddUser = ({
     setEmail('');
     setPhone('');
     setWebsite('');
+    setShowAddUser(false);
   };
 
   return (
