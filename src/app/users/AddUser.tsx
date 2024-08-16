@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { User } from './definitions.d';
+import { v4 as uuidv4 } from 'uuid';
 
 const AddUser = ({
   setUsers,
@@ -30,7 +31,8 @@ const AddUser = ({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userToSave),
     });
-    const data = await response.json();
+    let data = await response.json();
+    data.id = uuidv4();
 
     setUsers((prevState) => [data, ...prevState]);
 

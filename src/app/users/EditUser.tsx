@@ -1,5 +1,5 @@
-import type { User } from './definitions.d';
 import { useState } from 'react';
+import type { User } from './definitions.d';
 
 function EditUser({
   user,
@@ -19,7 +19,14 @@ function EditUser({
   const saveUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // if the id is different than 1...10 then it was created by the client
+    let clientCreatedId;
+    if (!Array.from({ length: 10 }, (_, i) => i + 1).includes(user.id)) {
+      clientCreatedId = user.id;
+    }
+
     let userToSave = {
+      id: clientCreatedId ? 1 : user.id, // fake id for the api if client created
       name,
       username,
       email,
@@ -27,12 +34,19 @@ function EditUser({
       website,
     };
 
-    const response = await fetch(`http://localhost:8080/users/${user.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userToSave),
-    });
-    const data = await response.json();
+    const response = await fetch(
+      `http://localhost:8080/users/${userToSave.id}`,
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userToSave),
+      }
+    );
+    let data = await response.json();
+
+    if (clientCreatedId) {
+      data.id = clientCreatedId;
+    }
 
     setUsers((prevState) =>
       prevState.map((u) => (u.id === user.id ? data : u))
